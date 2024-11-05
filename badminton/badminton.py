@@ -24,8 +24,8 @@ def getEnv(env, default="", required=False):
 
 debug = getEnv("DEBUG", False)\
 # 将 username 和 password 替换为自己的学号和密码
-username = "XXXXXXXXXX"
-password = "XXXXXXXXXX"
+username = "419100230079"
+password = "Zxcv1234."
 ndyy = "ndyy.ncu.edu.cn"
 cas = "cas.ncu.edu.cn"
 loginUrl = (
@@ -136,10 +136,10 @@ def makeReservation(token, captcha_result):
     # startTime = "18:00-19:00"
     # areaName = "羽毛球5号场地"
     # areaNickname = "hall5"
-    date = "202X-XX-XX"
-    startTime = "XX:00-XX:00"
-    areaName = "羽毛球X号场地"
-    areaNickname = "hallX"
+    date = "2024-11-07"
+    startTime = "18:00-19:00"
+    areaName = "羽毛球6号场地"
+    areaNickname = "hall6"
     params = {
         "role": "ROLE_STUDENT",
         "date": date,
