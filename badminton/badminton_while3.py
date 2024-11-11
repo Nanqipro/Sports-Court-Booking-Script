@@ -8,7 +8,9 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse, parse_qs
 import base64
 from Crypto.Cipher import AES  
-from Crypto.Util.Padding import pad, unpad 
+from Crypto.Util.Padding import pad, unpad
+from datetime import datetime, timedelta
+import time
 
 def getEnv(env, default="", required=False):
     if os.path.exists("config.ini"):
@@ -24,8 +26,8 @@ def getEnv(env, default="", required=False):
 
 debug = getEnv("DEBUG", False)\
 # 将 username 和 password 替换为自己的学号和密码
-username = "419100230079"
-password = "Zxcv1234."
+username = "419100230144"
+password = "Ncdxmmzy98."
 ndyy = "ndyy.ncu.edu.cn"
 cas = "cas.ncu.edu.cn"
 loginUrl = (
@@ -134,12 +136,12 @@ def makeReservation(token, captcha_result):
     # 请根据实际情况修改以下参数
     # data = "2024-11-13"
     # startTime = "18:00-19:00"
-    # areaName = "羽毛球5号场地"
-    # areaNickname = "hall5"
-    date = "2024-11-13"
+    # areaName = "羽毛球2号场地"
+    # areaNickname = "hall2"
+    date = "2024-11-20"
     startTime = "18:00-19:00"
-    areaName = "羽毛球7号场地"
-    areaNickname = "hall7"
+    areaName = "羽毛球6号场地"
+    areaNickname = "hall6"
     params = {
         "role": "ROLE_STUDENT",
         "date": date,
@@ -159,6 +161,17 @@ def makeReservation(token, captcha_result):
     return response_reservation
 
 if __name__ == "__main__":
+    # 无限循环，直到当前时间为中午 12 点
+    while True:
+        current_time = datetime.now()
+        if current_time.hour == 12 and current_time.minute == 0:
+            print(current_time.hour)
+            break  # 到达中午 12 点，退出循环并开始执行预订任务
+        else:
+            # print(current_time.minute)
+            time.sleep(1)  # 每分钟检查一次时间
+
+    # 12 点开始执行预订任务
     log("INFO", "BEGIN")
     token = getXToken(username, password)
     print(token)
