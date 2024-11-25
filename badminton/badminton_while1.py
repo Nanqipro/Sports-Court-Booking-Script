@@ -138,10 +138,10 @@ def makeReservation(token, captcha_result):
     # startTime = "18:00-19:00"
     # areaName = "羽毛球2号场地"
     # areaNickname = "hall2"
-    date = "2024-11-20"
+    date = "2024-11-27"
     startTime = "18:00-19:00"
-    areaName = "羽毛球5号场地"
-    areaNickname = "hall5"
+    areaName = "羽毛球3号场地"
+    areaNickname = "hall3"
     params = {
         "role": "ROLE_STUDENT",
         "date": date,
