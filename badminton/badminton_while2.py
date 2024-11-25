@@ -139,7 +139,7 @@ def makeReservation(token, captcha_result):
     # areaName = "羽毛球2号场地"
     # areaNickname = "hall2"
     date = "2024-11-27"
-    startTime = "19:00-20:00"
+    startTime = "18:00-19:00"
     areaName = "羽毛球3号场地"
     areaNickname = "hall3"
     params = {
