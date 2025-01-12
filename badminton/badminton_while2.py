@@ -24,10 +24,10 @@ def getEnv(env, default="", required=False):
         raise Exception(f"Env {env} is required")
     return default
 
-debug = getEnv("DEBUG", False)\
+debug = getEnv("DEBUG", False)
 # 将 username 和 password 替换为自己的学号和密码
-username = "419100230079"
-password = "Zxcv1234."
+username = "419100240107"
+password = "31415926535@Zj"
 ndyy = "ndyy.ncu.edu.cn"
 cas = "cas.ncu.edu.cn"
 loginUrl = (
@@ -45,7 +45,6 @@ def log(level, msg):
         print(f"[{datetime.now()}] [DEBUG]: {msg}")
     else:
         print(f"[{datetime.now()}] [{level}]: {msg}")
-        
 
 def getXToken(username, password):
     response = session.get(loginUrl)
@@ -70,67 +69,7 @@ def getXToken(username, password):
     log("DEBUG", token)
     return token
 
-
-def getCaptcha(token):
-    url_captcha = "https://ndyy.ncu.edu.cn/api/generateCaptcha"
-    headers_captcha = {
-        "Accept": "application/json, text/plain, */*",
-        "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
-        "Referer": "https://ndyy.ncu.edu.cn/booking",
-        "Token": token,
-    }
-    session.headers.update(headers_captcha) 
-    response_captcha = session.get(url_captcha)
-    return response_captcha
-
-KEY = b'ndyyM1m2c3$0j9m8'
-IV = b'ncuHe110F*4g5htt'
-
-def pad(data):
-    pad_length = AES.block_size - len(data) % AES.block_size
-    return data + b'\0' * pad_length
-
-def unpad(data):
-
-    return data.rstrip(b'\0')
-
-def Encrypt(word, keyStr=None, ivStr=None):
-    key = KEY if keyStr is None else keyStr.encode('utf-8')
-    iv = IV if ivStr is None else ivStr.encode('utf-8')
-    data = pad(word.encode('utf-8'))
-    cipher = AES.new(key, AES.MODE_CBC, iv)
-    encrypted = cipher.encrypt(data)
-    encrypted_base64 = base64.b64encode(encrypted).decode('utf-8')
-    return encrypted_base64
-
-def Decrypt(word, keyStr=None, ivStr=None):
-    key = KEY if keyStr is None else keyStr.encode('utf-8')
-    iv = IV if ivStr is None else ivStr.encode('utf-8')
-    encrypted_data = base64.b64decode(word)
-    cipher = AES.new(key, AES.MODE_CBC, iv)
-    decrypted = cipher.decrypt(encrypted_data)
-    decrypted = unpad(decrypted).decode('utf-8')
-    return decrypted
-
-def decodeCaptcha(captcha_data):
-    captcha_base64 = captcha_data.get("captchaImg")
-    if not captcha_base64:
-        log("ERROR", "获取的验证码数据中缺少 'captchaImg' 键")
-        print(captcha_data)
-        return None
-    captcha_new = Decrypt(captcha_base64)
-    header, encoded = captcha_new.split(',', 1)
-    
-    image_data = base64.b64decode(encoded)
-    
-    with open('captcha1.jpg', 'wb') as f:
-        f.write(image_data)
-    ocr = ddddocr.DdddOcr()
-    image = open("captcha1.jpg", "rb").read()
-    result = ocr.classification(image)
-    return result
-
-def makeReservation(token, captcha_result):
+def makeReservation(token):
     url_reservation = "https://ndyy.ncu.edu.cn/api/badminton/saveReservationInformation"
     
     # 请根据实际情况修改以下参数
@@ -138,17 +77,16 @@ def makeReservation(token, captcha_result):
     # startTime = "18:00-19:00"
     # areaName = "羽毛球2号场地"
     # areaNickname = "hall2"
-    date = "2024-11-27"
+    date = "2025-1-14"
     startTime = "18:00-19:00"
-    areaName = "羽毛球3号场地"
-    areaNickname = "hall3"
+    areaName = "羽毛球1号场地"
+    areaNickname = "hall1"
     params = {
         "role": "ROLE_STUDENT",
         "date": date,
         "startTime": startTime,
         "areaName": areaName,
-        "areaNickname": areaNickname,
-        "captcha": captcha_result  
+        "areaNickname": areaNickname
     }
     headers_reservation = {
         "Accept": "application/json, text/plain, */*",
@@ -175,18 +113,11 @@ if __name__ == "__main__":
     log("INFO", "BEGIN")
     token = getXToken(username, password)
     print(token)
-    response_captcha = getCaptcha(token)
-    if response_captcha.status_code == 200:
-        captcha_data = response_captcha.json()
-        captcha_result = decodeCaptcha(captcha_data)
-        response_reservation = makeReservation(token, captcha_result)
-        if response_reservation.status_code == 200:
-            print("预订成功")
-            print(response_reservation.json())
-        else:
-            print(f"预订失败，状态码：{response_reservation.status_code}")
-            print(response_reservation.text)
+    response_reservation = makeReservation(token)
+    if response_reservation.status_code == 200:
+        print("预订成功")
+        print(response_reservation.json())
     else:
-        print(f"获取验证码失败，状态码：{response_captcha.status_code}")
-        print(response_captcha.text)
+        print(f"预订失败，状态码：{response_reservation.status_code}")
+        print(response_reservation.text)
     log("INFO", "END")
