@@ -298,44 +298,100 @@ def log(level, msg):
         print(f"[{datetime.now()}] [{level}]: {msg}")
 
 def getXToken(username, password):
-    response = session.get(loginUrl)
-    soup = BeautifulSoup(response.text, "html.parser")
-    data = {
-        "username": username,
-        "password": password,
-        "rememberMe": False,
-        "captcha": soup.find("input", {"name": "captcha"}).get("value"),
-        "currentMenu": soup.find("input", {"name": "currentMenu"}).get("value"),
-        "failN": soup.find("input", {"name": "failN"}).get("value"),
-        "mfaState": soup.find("input", {"name": "mfaState"}).get("value"),
-        "execution": soup.find("input", {"name": "execution"}).get("value"),
-        "_eventId": soup.find("input", {"name": "_eventId"}).get("value"),
-        "geolocation": soup.find("input", {"name": "geolocation"}).get("value"),
-        "submit": soup.find("input", {"name": "submit"}).get("value"),
-    }
-    response = session.post(loginUrl, data=data)
-    parsed_url = urlparse(response.request.path_url)
-    query_params = parse_qs(parsed_url.query)
-    token = query_params.get('token', [None])[0]
-    log("DEBUG", token)
-    return token
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            response = session.get(loginUrl)
+            soup = BeautifulSoup(response.text, "html.parser")
+            
+            # 检查所有必需的字段
+            required_fields = ["captcha", "currentMenu", "failN", "mfaState", "execution", "_eventId", "geolocation", "submit"]
+            field_values = {}
+            
+            for field in required_fields:
+                element = soup.find("input", {"name": field})
+                if not element or not element.get("value"):
+                    print(f"警告：找不到字段 {field} 或其值为空")
+                    if attempt < max_retries - 1:
+                        print("等待1秒后重试登录...")
+                        time.sleep(1)
+                        continue
+                    else:
+                        raise Exception(f"无法获取登录所需的 {field} 字段")
+                field_values[field] = element.get("value")
+            
+            data = {
+                "username": username,
+                "password": password,
+                "rememberMe": False,
+                **field_values
+            }
+            
+            response = session.post(loginUrl, data=data)
+            parsed_url = urlparse(response.request.path_url)
+            query_params = parse_qs(parsed_url.query)
+            token = query_params.get('token', [None])[0]
+            
+            if token:
+                log("DEBUG", token)
+                return token
+            else:
+                print("警告：未能获取到token")
+                if attempt < max_retries - 1:
+                    print("等待1秒后重试登录...")
+                    time.sleep(1)
+                    continue
+                else:
+                    raise Exception("登录失败：无法获取token")
+                    
+        except Exception as e:
+            print(f"登录过程出错: {str(e)}")
+            if attempt < max_retries - 1:
+                print("等待1秒后重试登录...")
+                time.sleep(1)
+            else:
+                raise Exception("登录失败，已达到最大重试次数")
+    
+    return None
 
 def checkAvailability(token, date, startTime, areaName):
-    url_check = "https://ndyy.ncu.edu.cn/api/badminton/getReservationInformationByDateAndTime"
-    params = {
-        "date": date,
-        "startTime": startTime
-    }
-    headers_check = {
-        "Accept": "application/json, text/plain, */*",
-        "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
-        "Referer": "https://ndyy.ncu.edu.cn/booking",
-        "Token": token
-    }
-    session.headers.update(headers_check)
-    response = session.get(url_check, params=params)
-    if response.status_code == 200:
-        return response.json()
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            url_check = "https://ndyy.ncu.edu.cn/api/badminton/getReservationInformationByDateAndTime"
+            params = {
+                "date": date,
+                "startTime": startTime
+            }
+            headers_check = {
+                "Accept": "application/json, text/plain, */*",
+                "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
+                "Referer": "https://ndyy.ncu.edu.cn/booking",
+                "Token": token
+            }
+            session.headers.update(headers_check)
+            response = session.get(url_check, params=params)
+            
+            if response.status_code == 200:
+                result = response.json()
+                print(f"场地查询响应: {result}")
+                return result
+            else:
+                print(f"场地查询失败，状态码: {response.status_code}")
+                if attempt < max_retries - 1:
+                    print("等待1秒后重试查询...")
+                    time.sleep(1)
+                    continue
+                
+        except Exception as e:
+            print(f"查询场地可用性时出错: {str(e)}")
+            if attempt < max_retries - 1:
+                print("等待1秒后重试查询...")
+                time.sleep(1)
+            else:
+                print("查询场地可用性失败，已达到最大重试次数")
+                return None
+    
     return None
 
 def preloadBookingPage(token):
@@ -349,45 +405,50 @@ def preloadBookingPage(token):
     return session.get(url_booking)
 
 def makeReservation(token, date, startTime, areaName, areaNickname):
-    # 先预加载预约页面
-    preload_response = preloadBookingPage(token)
-    if preload_response.status_code != 200:
-        print("预加载预约页面失败")
-        return None
+    try:
+        # 先预加载预约页面
+        preload_response = preloadBookingPage(token)
+        if preload_response.status_code != 200:
+            print(f"预加载预约页面失败，状态码: {preload_response.status_code}")
+            return None
 
-    # 检查场地可用性
-    availability = checkAvailability(token, date, startTime, areaName)
-    if not availability:
-        print("获取场地可用性信息失败")
+        # 检查场地可用性
+        availability = checkAvailability(token, date, startTime, areaName)
+        if not availability:
+            print("获取场地可用性信息失败")
+            return None
+        
+        print("场地可用性信息：", availability)
+        
+        url_reservation = "https://ndyy.ncu.edu.cn/api/badminton/saveReservationInformation"
+        
+        params = {
+            "role": "ROLE_STUDENT",
+            "date": date,
+            "startTime": startTime,
+            "areaName": areaName,
+            "areaNickname": areaNickname
+        }
+        
+        # 打印预约参数
+        print(f"正在尝试预约以下场地:")
+        print(f"日期: {date}")
+        print(f"时间: {startTime}")
+        print(f"场地: {areaName}")
+        
+        headers_reservation = {
+            "Accept": "application/json, text/plain, */*",
+            "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
+            "Referer": "https://ndyy.ncu.edu.cn/booking",
+            "Token": token,
+        }
+        session.headers.update(headers_reservation)
+        response_reservation = session.get(url_reservation, params=params)
+        return response_reservation
+        
+    except Exception as e:
+        print(f"预约过程出错: {str(e)}")
         return None
-    
-    print("场地可用性信息：", availability)
-    
-    url_reservation = "https://ndyy.ncu.edu.cn/api/badminton/saveReservationInformation"
-    
-    params = {
-        "role": "ROLE_STUDENT",
-        "date": date,
-        "startTime": startTime,
-        "areaName": areaName,
-        "areaNickname": areaNickname
-    }
-    
-    # 打印预约参数
-    print(f"正在尝试预约以下场地:")
-    print(f"日期: {date}")
-    print(f"时间: {startTime}")
-    print(f"场地: {areaName}")
-    
-    headers_reservation = {
-        "Accept": "application/json, text/plain, */*",
-        "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
-        "Referer": "https://ndyy.ncu.edu.cn/booking",
-        "Token": token,
-    }
-    session.headers.update(headers_reservation)
-    response_reservation = session.get(url_reservation, params=params)
-    return response_reservation
 
 if __name__ == "__main__":
     print("欢迎使用羽毛球场地预约系统！")
