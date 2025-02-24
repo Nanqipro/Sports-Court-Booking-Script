@@ -77,8 +77,8 @@ def makeReservation(token):
     # startTime = "18:00-19:00"
     # areaName = "羽毛球2号场地"
     # areaNickname = "hall2"
-    date = "2025-1-14"
-    startTime = "18:00-19:00"
+    date = "2025-2-26"
+    startTime = "19:00-20:00"
     areaName = "羽毛球1号场地"
     areaNickname = "hall1"
     params = {
