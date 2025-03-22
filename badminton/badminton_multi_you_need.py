@@ -488,7 +488,16 @@ def get_user_input() -> Tuple[str, str, str, List[str], List[str], List[str]]:
 
 if __name__ == "__main__":
     log("INFO", "BEGIN")
-    
+    print("================说明：================\n")
+    print("1. 请输入学号和密码，直接回车使用默认账号和密码")
+    print("2. 请输入预约日期，直接回车预约后天场地")
+    print("3. 请选择时间段编号，多个时间段用英文逗号分隔，例如1,2,3")
+    print("4. 请选择场地编号，多个场地用英文逗号分隔，例如1,2,3")
+    print("5. 请输入开始预约的目标时间，例如12:00")
+    print("6. 系统将在目标时间开始预约")
+    print("7. 预约成功后，系统将自动退出")
+    print("8. 预约失败后，系统将自动重试，直到预约成功")
+    print("================说明：================\n")
     try:
         # 获取用户输入
         username, password, date, time_slots, area_names, area_nicknames = get_user_input()
