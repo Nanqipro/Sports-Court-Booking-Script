@@ -420,8 +420,8 @@ def get_user_input() -> Tuple[str, str, str, List[str], List[str], List[str]]:
         username = username_input if username_input.strip() else DEFAULT_USERNAME
     
     if not password:
-        import getpass
-        password_input = getpass.getpass("请输入密码(直接回车使用默认密码): ")
+        # 使用普通 input 代替 getpass.getpass 显示密码
+        password_input = input("请输入密码(直接回车使用默认密码): ")
         password = password_input if password_input.strip() else DEFAULT_PASSWORD
     
     # 获取预约日期，默认为后天
