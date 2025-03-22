@@ -2,7 +2,6 @@
 import ddddocr
 import requests
 import os
-import time
 from configparser import ConfigParser
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
@@ -11,6 +10,7 @@ import base64
 from Crypto.Cipher import AES  
 from Crypto.Util.Padding import pad, unpad 
 from typing import Dict, Any, Optional, Union, Tuple
+import time
 
 def getEnv(env: str, default: Any = "", required: bool = False) -> str:
     """
@@ -483,193 +483,6 @@ def get_user_input() -> Tuple[str, str, str, str, str, str]:
     
     return username, password, date, startTime, areaName, areaNickname
 
-def get_start_time() -> Optional[datetime]:
-    """
-    获取用户指定的预约开始执行时间
-    
-    Returns
-    -------
-    Optional[datetime]
-        用户指定的开始执行时间，如果不指定则返回None
-    """
-    use_timer = input("\n是否需要定时执行？(y/n，默认n): ").strip().lower()
-    
-    if use_timer != 'y':
-        print("\n未设置定时，系统将立即开始执行预约程序")
-        return None
-    
-    now = datetime.now()
-    
-    # 获取小时
-    while True:
-        hour_input = input("请输入开始执行的小时(0-23，24小时制): ")
-        try:
-            hour = int(hour_input)
-            if 0 <= hour <= 23:
-                break
-            else:
-                print("输入的小时必须在0到23之间，请重新输入")
-        except ValueError:
-            print("请输入有效的数字")
-    
-    # 获取分钟
-    while True:
-        minute_input = input("请输入开始执行的分钟(0-59): ")
-        try:
-            minute = int(minute_input)
-            if 0 <= minute <= 59:
-                break
-            else:
-                print("输入的分钟必须在0到59之间，请重新输入")
-        except ValueError:
-            print("请输入有效的数字")
-    
-    # 创建目标时间
-    target_time = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
-    
-    # 如果目标时间已经过去，则设置为明天的这个时间
-    if target_time < now:
-        print("设定的时间已过去，将在明天的这个时间执行")
-        target_time = target_time + timedelta(days=1)
-    
-    print(f"\n系统将在 {target_time.strftime('%Y-%m-%d %H:%M:%S')} 开始执行预约")
-    
-    return target_time
-
-def wait_until(target_time: datetime) -> None:
-    """
-    等待直到指定的时间
-    
-    Parameters
-    ----------
-    target_time : datetime
-        目标时间
-    """
-    now = datetime.now()
-    
-    if now >= target_time:
-        return
-    
-    wait_seconds = (target_time - now).total_seconds()
-    
-    # 如果等待时间超过5分钟，每分钟显示一次倒计时
-    if wait_seconds > 300:
-        minutes_to_wait = int(wait_seconds / 60)
-        for i in range(minutes_to_wait, 0, -1):
-            if i % 5 == 0 or i <= 5:  # 每5分钟或最后5分钟每分钟提示一次
-                print(f"距离开始执行还有 {i} 分钟...")
-            time.sleep(60)
-        
-        # 剩余不足1分钟的秒数
-        remaining_seconds = wait_seconds % 60
-        if remaining_seconds > 0:
-            print(f"最后倒计时 {int(remaining_seconds)} 秒...")
-            time.sleep(remaining_seconds)
-    else:
-        # 等待时间不长，直接等待
-        print(f"等待 {int(wait_seconds)} 秒后开始执行...")
-        time.sleep(wait_seconds)
-    
-    print("开始执行预约程序!")
-
-def attempt_reservation(username: str, password: str, date: str, 
-                      startTime: str, areaName: str, areaNickname: str,
-                      max_attempts: int = 10, retry_interval: int = 3) -> bool:
-    """
-    尝试进行场地预约，失败时自动重试
-    
-    Parameters
-    ----------
-    username : str
-        用户名
-    password : str
-        密码
-    date : str
-        预约日期
-    startTime : str
-        预约时间段
-    areaName : str
-        场地名称
-    areaNickname : str
-        场地代码
-    max_attempts : int
-        最大尝试次数
-    retry_interval : int
-        重试间隔(秒)
-        
-    Returns
-    -------
-    bool
-        是否预约成功
-    """
-    attempt = 0
-    
-    while attempt < max_attempts:
-        attempt += 1
-        log("INFO", f"开始第 {attempt} 次预约尝试")
-        
-        try:
-            # 获取登录token
-            token = getXToken(username, password)
-            if not token:
-                log("ERROR", "获取Token失败，重试中...")
-                time.sleep(retry_interval)
-                continue
-                
-            log("INFO", f"获取到Token: {token}")
-            
-            # 获取验证码
-            response_captcha = getCaptcha(token)
-            if response_captcha.status_code != 200:
-                log("ERROR", f"获取验证码失败，状态码：{response_captcha.status_code}")
-                log("DEBUG", response_captcha.text)
-                time.sleep(retry_interval)
-                continue
-                
-            captcha_data = response_captcha.json()
-            captcha_result = decodeCaptcha(captcha_data)
-            
-            if not captcha_result:
-                log("ERROR", "验证码识别失败，重试中...")
-                time.sleep(retry_interval)
-                continue
-            
-            # 提交预约
-            response_reservation = makeReservation(token, captcha_result, date, startTime, areaName, areaNickname)
-            
-            # 检查响应
-            if response_reservation.status_code != 200:
-                log("ERROR", f"预约请求失败，状态码：{response_reservation.status_code}")
-                log("DEBUG", response_reservation.text)
-                time.sleep(retry_interval)
-                continue
-                
-            # 解析响应内容
-            result = response_reservation.json()
-            
-            # 处理可能的业务错误
-            if 'status' in result and result['status'] == 200:
-                log("INFO", "预约成功!")
-                print(result.get('message', ''))
-                print(result)
-                return True
-            else:
-                error_msg = result.get('message', '未知错误')
-                log("ERROR", f"预约失败: {error_msg}")
-                
-                # 如果是验证码错误，直接重试，其他错误增加等待时间
-                if '验证码' in error_msg:
-                    time.sleep(1)
-                else:
-                    time.sleep(retry_interval)
-        
-        except Exception as e:
-            log("ERROR", f"预约过程出现异常: {str(e)}")
-            time.sleep(retry_interval)
-    
-    log("ERROR", f"达到最大尝试次数 {max_attempts}，预约失败")
-    return False
-
 if __name__ == "__main__":
     log("INFO", "BEGIN")
     
@@ -677,43 +490,88 @@ if __name__ == "__main__":
         # 获取用户输入
         username, password, date, startTime, areaName, areaNickname = get_user_input()
         
-        # 获取开始执行时间
-        start_time = get_start_time()
+        # 获取用户输入的目标时间
+        while True:
+            try:
+                target_hour = int(input("\n请输入开始预约的目标时间（小时，24小时制，例如12）: "))
+                if 0 <= target_hour <= 23:
+                    target_minute = int(input("请输入开始预约的目标时间（分钟，例如00）: "))
+                    if 0 <= target_minute <= 59:
+                        break
+                    else:
+                        print("请输入0-59之间的数字！")
+                else:
+                    print("请输入0-23之间的数字！")
+            except ValueError:
+                print("请输入有效的数字！")
         
-        # 如果设置了定时，等待到指定时间
-        if start_time:
-            wait_until(start_time)
+        print(f"\n系统将在每天 {target_hour:02d}:{target_minute:02d} 开始预约")
+        print(f"预约信息确认：")
+        print(f"日期：{date}")
+        print(f"时间段：{startTime}")
+        print(f"场地：{areaName}")
+        print("\n等待预约时间...")
         
-        # 开始轮询预约
+        # 无限循环，直到当前时间为指定时间点
+        while True:
+            current_time = datetime.now()
+            if current_time.hour == target_hour and current_time.minute == target_minute:
+                log("INFO", f"当前时间: {current_time}，开始执行预约")
+                break  # 到达指定时间点，退出循环并开始执行预订任务
+            else:
+                time.sleep(1)  # 每秒检查一次时间
+        
+        # 获取登录token
+        token = getXToken(username, password)
+        log("INFO", f"获取到Token: {token}")
+        
+        # 循环尝试预约，直到成功
         success = False
-        retry_count = 0
-        max_retries = 50  # 最大重试次数
+        attempt_count = 0
+        max_attempts = 50  # 最大尝试次数
         
-        print("\n开始预约流程，将持续尝试直到成功或达到最大尝试次数...")
+        log("INFO", "开始循环尝试预约...")
+        while not success and attempt_count < max_attempts:
+            attempt_count += 1
+            log("INFO", f"第 {attempt_count} 次尝试预约")
+            
+            try:
+                # 每5次尝试刷新一次token
+                if attempt_count > 1 and attempt_count % 5 == 0:
+                    token = getXToken(username, password)
+                    log("INFO", f"刷新Token: {token}")
+                
+                # 获取验证码
+                response_captcha = getCaptcha(token)
+                if response_captcha.status_code == 200:
+                    captcha_data = response_captcha.json()
+                    captcha_result = decodeCaptcha(captcha_data)
+                    
+                    # 提交预约
+                    response_reservation = makeReservation(token, captcha_result, date, startTime, areaName, areaNickname)
+                    if response_reservation.status_code == 200:
+                        reservation_result = response_reservation.json()
+                        if reservation_result.get('code') == '200':
+                            success = True
+                            log("INFO", "预订成功")
+                            print(reservation_result)
+                        else:
+                            log("WARNING", f"预订未成功: {reservation_result}")
+                            time.sleep(1)  # 等待1秒后重试
+                    else:
+                        log("WARNING", f"预订请求失败，状态码：{response_reservation.status_code}")
+                        print(response_reservation.text)
+                        time.sleep(2)  # 等待2秒后重试
+                else:
+                    log("WARNING", f"获取验证码失败，状态码：{response_captcha.status_code}")
+                    print(response_captcha.text)
+                    time.sleep(2)  # 等待2秒后重试
+            except Exception as e:
+                log("ERROR", f"本次尝试发生异常: {str(e)}")
+                time.sleep(3)  # 发生异常后等待3秒
         
-        while not success and retry_count < max_retries:
-            retry_count += 1
-            log("INFO", f"第 {retry_count} 轮预约尝试")
-            
-            # 尝试预约
-            success = attempt_reservation(
-                username, password, date, startTime, areaName, areaNickname,
-                max_attempts=3, retry_interval=2
-            )
-            
-            if not success:
-                # 失败后等待几秒再试
-                wait_time = 5
-                log("INFO", f"本轮预约失败，{wait_time} 秒后重试...")
-                time.sleep(wait_time)
-        
-        if success:
-            log("INFO", "预约流程成功完成!")
-        else:
-            log("ERROR", f"达到最大重试次数 {max_retries}，预约彻底失败")
-            
-    except KeyboardInterrupt:
-        log("INFO", "用户中断程序")
+        if not success:
+            log("ERROR", f"达到最大尝试次数 {max_attempts}，预约失败")
     except Exception as e:
         log("ERROR", f"程序运行异常: {str(e)}")
     finally:
