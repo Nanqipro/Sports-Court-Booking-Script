@@ -398,7 +398,7 @@ def get_user_input() -> Tuple[str, str, str, str, str, str]:
     Tuple[str, str, str, str, str, str]
         用户名、密码、预约日期、时间段、场地名称、场地代码
     """
-    // 默认账号密码
+    # 默认账号密码
     DEFAULT_USERNAME = "419100240133"
     DEFAULT_PASSWORD = "111111111111"
     
@@ -494,6 +494,7 @@ if __name__ == "__main__":
     print("6. 系统将在目标时间开始预约")
     print("7. 预约成功后，系统将自动退出")
     print("8. 预约失败后，系统将自动重试，直到预约成功")
+    print("9. 预约成功码为200，请一分钟内在系统中次卡消耗或付费")
     print("================说明：================\n")
     try:
         # 获取用户输入
