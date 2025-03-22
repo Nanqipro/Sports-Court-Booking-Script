@@ -528,7 +528,7 @@ if __name__ == "__main__":
         # 循环尝试预约，直到成功
         success = False
         attempt_count = 0
-        max_attempts = 50  # 最大尝试次数
+        max_attempts = 10  # 最大尝试次数
         
         log("INFO", "开始循环尝试预约...")
         while not success and attempt_count < max_attempts:
