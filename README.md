@@ -1,4 +1,4 @@
-# 体育场地预约自动化脚本
+# NCU体育场地预约自动化脚本
 
 这是一个用于自动预约羽毛球场地的Python脚本集合，专为南昌大学体育场地预约系统设计。脚本提供多种预约模式和功能，满足不同场景的预约需求。
 
@@ -17,6 +17,12 @@
 使用以下命令安装所需的Python库:
 
 ```bash
+pip install -r requirements.txt
+```
+
+或者直接安装:
+
+```bash
 pip install ddddocr requests pycryptodome beautifulsoup4 configparser -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
@@ -24,41 +30,23 @@ pip install ddddocr requests pycryptodome beautifulsoup4 configparser -i https:/
 
 本项目包含多个脚本文件，适用于不同场景：
 
-- **badminton_multi.py**: 功能最全面的多场地多时间段预约脚本，支持配置文件、交互式界面和定时预约
-- **badminton_while_verification.py**: 带验证码处理的定时预约脚本，在指定时间（默认12点）自动预约
-- **badminton_noWhile.py**: 无定时功能的直接预约脚本，运行后立即进行预约
-- **badminton_while_noVerification1.py**: 交互式预约脚本，提供用户界面自定义预约信息
-- **badminton_while_noVerification2.py**: 简化版定时预约脚本，硬编码预约信息（无需用户输入）
-- **run.sh**: Linux/Mac下批量运行多个预约脚本的Shell脚本
+- **badminton_multi_you_need.py**: 功能最全面的多场地多时间段预约脚本，支持配置文件、交互式界面和定时预约
+- **badminton_all_you_need** ：适用于单场单时间段预约，支持配置文件、交互式界面和定时预约
 
 ## 使用指南
 
 ### 1. 配置方式
 
-badminton_multi.py支持两种配置方式：
+badminton_multi_you_need.py支持两种配置方式：
 
-#### 方式一：配置文件
-创建`config.ini`文件，内容如下：
-```ini
-[CONFIG]
-BADMINTON_USERNAME=你的学号
-BADMINTON_PASSWORD=你的密码
-DEBUG=True
-```
 
-#### 方式二：环境变量
-```bash
-export BADMINTON_USERNAME=你的学号
-export BADMINTON_PASSWORD=你的密码
-export DEBUG=True
-```
 
 如果不配置，脚本会在运行时提示输入。
 
-### 2. 运行badminton_multi.py
+### 2. 运行badminton_multi_you_need.py
 
 ```bash
-python badminton_multi.py
+python badminton_multi_you_need.py
 ```
 
 ### 3. 交互式配置
@@ -108,29 +96,12 @@ password = "你的密码"
 根据需要修改预约场地、时间等信息：
 
 ```python
-date = "2024-03-20"          # 预约日期
+date = "2025-03-20"          # 预约日期
 startTime = "19:00-20:00"    # 预约时间段
 areaName = "羽毛球1号场地"    # 场地名称
 areaNickname = "hall1"       # 场地代码
 ```
 
-### 3. 运行其他脚本
-
-#### 交互式预约
-```bash
-python badminton_while_noVerification1.py
-```
-
-#### 自动定时预约
-```bash
-python badminton_while_verification.py
-```
-
-#### 批量预约（Linux/Mac）
-```bash
-chmod +x run.sh
-./run.sh
-```
 
 ## 故障排除
 
