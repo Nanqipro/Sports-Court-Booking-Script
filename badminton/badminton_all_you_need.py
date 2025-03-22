@@ -398,9 +398,9 @@ def get_user_input() -> Tuple[str, str, str, str, str, str]:
     Tuple[str, str, str, str, str, str]
         用户名、密码、预约日期、时间段、场地名称、场地代码
     """
-    # 默认账号密码
-    DEFAULT_USERNAME = "419100240107"
-    DEFAULT_PASSWORD = "31415926535@Zj"
+    // 默认账号密码
+    DEFAULT_USERNAME = "419100240133"
+    DEFAULT_PASSWORD = "111111111111"
     
     # 可选时间段列表
     TIME_SLOTS = [
