@@ -67,7 +67,7 @@
  [],
  False,
  False,
- 1742651462,
+ 1742699936,
  [('run.exe',
    'C:\\Users\\nanqipro\\.conda\\envs\\badminton\\lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\run.exe',
    'EXECUTABLE')],

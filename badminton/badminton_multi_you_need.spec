@@ -3,7 +3,7 @@
 block_cipher = None
 
 a = Analysis(['badminton_multi_you_need.py'],
-             pathex=['D:\\GitHub_local\\Sports-Court-Booking-Script\\badminton'],
+             pathex=['.'],
              binaries=[],
              datas=[],  # 设为空
              hiddenimports=['ddddocr', 'requests', 'pycryptodome', 'bs4', 'configparser'],
