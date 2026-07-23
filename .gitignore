@@ -1,0 +1,46 @@
+# Operating systems
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+
+# Local editors and coding agents
+.idea/
+.vscode/
+.cursor/
+.claude/
+.codex/
+*.code-workspace
+
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Build and packaging output
+build/
+dist/
+
+# Credentials and machine-local configuration
+config.ini
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
+
+# Runtime artifacts
+captcha*.jpg
+*.log
+*.tmp
+*.bak
+

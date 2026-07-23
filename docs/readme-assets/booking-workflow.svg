@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="360" viewBox="0 0 1280 360" role="img" aria-labelledby="title desc">
+  <title id="title">Booking workflow</title>
+  <desc id="desc">Six connected stages: plan, wait, sign in, recognize CAPTCHA, reserve, and report.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071b24"/>
+      <stop offset="1" stop-color="#0b3b4b"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5eead4"/>
+    </marker>
+    <filter id="shadow" x="-20%" y="-30%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#001016" flood-opacity=".34"/>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="360" rx="24" fill="url(#bg)"/>
+  <text x="64" y="58" fill="#ffffff" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" font-weight="750">A bounded, inspectable booking flow</text>
+  <text x="64" y="86" fill="#9fc8c7" font-family="PingFang SC,Microsoft YaHei,Inter,sans-serif" font-size="16">每一步都有明确输入；失败任务在限定次数后停止</text>
+
+  <g stroke="#5eead4" stroke-width="3" fill="none" marker-end="url(#arrow)" opacity=".9">
+    <path d="M236 202 H270"/>
+    <path d="M438 202 H472"/>
+    <path d="M640 202 H674"/>
+    <path d="M842 202 H876"/>
+    <path d="M1044 202 H1078"/>
+  </g>
+
+  <g font-family="PingFang SC,Microsoft YaHei,Inter,sans-serif" filter="url(#shadow)">
+    <g transform="translate(64 132)">
+      <rect width="172" height="140" rx="18" fill="#0d4b55" stroke="#64d8cc" stroke-opacity=".55"/>
+      <circle cx="30" cy="30" r="16" fill="#5eead4"/>
+      <text x="30" y="36" text-anchor="middle" fill="#062329" font-size="17" font-weight="800">1</text>
+      <text x="22" y="78" fill="#ffffff" font-size="21" font-weight="700">选择计划</text>
+      <text x="22" y="108" fill="#b8d8d7" font-size="14">日期 · 时段 · 场地</text>
+    </g>
+    <g transform="translate(270 132)">
+      <rect width="168" height="140" rx="18" fill="#0d4b55" stroke="#64d8cc" stroke-opacity=".55"/>
+      <circle cx="30" cy="30" r="16" fill="#5eead4"/>
+      <text x="30" y="36" text-anchor="middle" fill="#062329" font-size="17" font-weight="800">2</text>
+      <text x="22" y="78" fill="#ffffff" font-size="21" font-weight="700">定时等待</text>
+      <text x="22" y="108" fill="#b8d8d7" font-size="14">或使用 --run-now</text>
+    </g>
+    <g transform="translate(472 132)">
+      <rect width="168" height="140" rx="18" fill="#0d4b55" stroke="#64d8cc" stroke-opacity=".55"/>
+      <circle cx="30" cy="30" r="16" fill="#5eead4"/>
+      <text x="30" y="36" text-anchor="middle" fill="#062329" font-size="17" font-weight="800">3</text>
+      <text x="22" y="78" fill="#ffffff" font-size="21" font-weight="700">CAS 登录</text>
+      <text x="22" y="108" fill="#b8d8d7" font-size="14">密码不回显、不记录</text>
+    </g>
+    <g transform="translate(674 132)">
+      <rect width="168" height="140" rx="18" fill="#0d4b55" stroke="#64d8cc" stroke-opacity=".55"/>
+      <circle cx="30" cy="30" r="16" fill="#5eead4"/>
+      <text x="30" y="36" text-anchor="middle" fill="#062329" font-size="17" font-weight="800">4</text>
+      <text x="22" y="78" fill="#ffffff" font-size="21" font-weight="700">本地 OCR</text>
+      <text x="22" y="108" fill="#b8d8d7" font-size="14">验证码不落盘</text>
+    </g>
+    <g transform="translate(876 132)">
+      <rect width="168" height="140" rx="18" fill="#0d4b55" stroke="#64d8cc" stroke-opacity=".55"/>
+      <circle cx="30" cy="30" r="16" fill="#fbbf24"/>
+      <text x="30" y="36" text-anchor="middle" fill="#352400" font-size="17" font-weight="800">5</text>
+      <text x="22" y="78" fill="#ffffff" font-size="21" font-weight="700">有限重试</text>
+      <text x="22" y="108" fill="#b8d8d7" font-size="14">超时 · 间隔 · 上限</text>
+    </g>
+    <g transform="translate(1078 132)">
+      <rect width="138" height="140" rx="18" fill="#11675f" stroke="#fbbf24" stroke-opacity=".8"/>
+      <circle cx="30" cy="30" r="16" fill="#fbbf24"/>
+      <text x="30" y="36" text-anchor="middle" fill="#352400" font-size="17" font-weight="800">6</text>
+      <text x="22" y="78" fill="#ffffff" font-size="21" font-weight="700">结果汇总</text>
+      <text x="22" y="108" fill="#d6efed" font-size="14">成功与失败分开</text>
+    </g>
+  </g>
+</svg>
+

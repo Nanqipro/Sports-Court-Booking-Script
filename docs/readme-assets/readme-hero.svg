@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="520" viewBox="0 0 1280 520" role="img" aria-labelledby="title desc">
+  <title id="title">NCU Court Booking</title>
+  <desc id="desc">A dark teal banner combining a badminton court, racket, shuttlecock, and a safe command-line booking plan.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071b24"/>
+      <stop offset="0.55" stop-color="#0b3b4b"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5eead4"/>
+      <stop offset="1" stop-color="#fbbf24"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d9fffa" stroke-opacity=".055" stroke-width="1"/>
+    </pattern>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#001016" flood-opacity=".45"/>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="520" rx="28" fill="url(#background)"/>
+  <rect width="1280" height="520" rx="28" fill="url(#grid)"/>
+  <circle cx="1160" cy="42" r="210" fill="#5eead4" opacity=".07"/>
+  <circle cx="1030" cy="488" r="230" fill="#fbbf24" opacity=".05"/>
+
+  <g transform="translate(72 68)">
+    <rect width="222" height="34" rx="17" fill="#d9fffa" opacity=".12"/>
+    <circle cx="18" cy="17" r="5" fill="#5eead4"/>
+    <text x="32" y="23" fill="#d9fffa" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15" font-weight="650" letter-spacing="1.5">PLAN · WAIT · RESERVE</text>
+
+    <text x="0" y="110" fill="#ffffff" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="58" font-weight="800" letter-spacing="-1.5">NCU COURT</text>
+    <text x="0" y="170" fill="url(#accent)" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="58" font-weight="800" letter-spacing="-1.5">BOOKING</text>
+    <text x="2" y="211" fill="#c7e8e6" font-family="PingFang SC,Microsoft YaHei,Inter,sans-serif" font-size="21">南昌大学羽毛球场地预约助手</text>
+
+    <g transform="translate(0 252)" filter="url(#shadow)">
+      <rect width="520" height="156" rx="18" fill="#06151d" stroke="#70cfc6" stroke-opacity=".35"/>
+      <circle cx="24" cy="24" r="5" fill="#fb7185"/>
+      <circle cx="42" cy="24" r="5" fill="#fbbf24"/>
+      <circle cx="60" cy="24" r="5" fill="#5eead4"/>
+      <text x="22" y="63" fill="#8aa8ae" font-family="SFMono-Regular,Consolas,monospace" font-size="15">$ python -m ncu_booking --dry-run</text>
+      <text x="22" y="94" fill="#f7fffe" font-family="SFMono-Regular,Consolas,monospace" font-size="15">计划  ·  2 个时段 × 3 个场地</text>
+      <text x="22" y="125" fill="#5eead4" font-family="SFMono-Regular,Consolas,monospace" font-size="15">✓ 未登录  ✓ 未发送请求  ✓ 未读取密码</text>
+    </g>
+  </g>
+
+  <g transform="translate(720 54)" filter="url(#shadow)">
+    <rect width="480" height="412" rx="26" fill="#09323e" stroke="#b8fff7" stroke-opacity=".24" stroke-width="2"/>
+    <rect x="48" y="42" width="384" height="328" rx="12" fill="#0b665f" stroke="#d9fffa" stroke-width="3"/>
+    <line x1="240" y1="42" x2="240" y2="370" stroke="#d9fffa" stroke-width="3"/>
+    <line x1="48" y1="206" x2="432" y2="206" stroke="#d9fffa" stroke-width="4"/>
+    <rect x="110" y="86" width="260" height="240" fill="none" stroke="#d9fffa" stroke-width="2" opacity=".9"/>
+    <line x1="110" y1="206" x2="370" y2="206" stroke="#d9fffa" stroke-width="2" opacity=".9"/>
+    <line x1="48" y1="154" x2="432" y2="154" stroke="#d9fffa" stroke-width="2" opacity=".8"/>
+    <line x1="48" y1="258" x2="432" y2="258" stroke="#d9fffa" stroke-width="2" opacity=".8"/>
+
+    <g transform="translate(302 92) rotate(-22)">
+      <ellipse cx="0" cy="0" rx="48" ry="66" fill="none" stroke="#fbbf24" stroke-width="7"/>
+      <path d="M-33-43 L33 43 M-43-20 L43 20 M-47 7 L39 46 M-38 36 L29-53 M-15-64 L46 7 M-46 10 L14 64" fill="none" stroke="#fbbf24" stroke-width="2" opacity=".8"/>
+      <path d="M0 66 L-11 142" stroke="#fbbf24" stroke-width="10" stroke-linecap="round"/>
+      <path d="M-11 142 L-14 171" stroke="#d9fffa" stroke-width="14" stroke-linecap="round"/>
+    </g>
+
+    <g transform="translate(134 282) rotate(18)">
+      <path d="M0 0 L42 20 L8 35 Z" fill="#ffffff"/>
+      <path d="M0 0 L-23-26 M9 5 L-12-34 M18 9 L-2-39 M27 13 L9-40" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="45" cy="22" rx="10" ry="14" fill="#fbbf24"/>
+    </g>
+  </g>
+</svg>
